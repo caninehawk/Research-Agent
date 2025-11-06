@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --background: 220 33% 98%;
+  --foreground: 228 20% 18%;
+  --muted: 220 12% 90%;
+  --muted-foreground: 224 12% 38%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 228 17% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 228 17% 14%;
+  --border: 220 13% 88%;
+  --input: 220 13% 88%;
+  --primary: 228 54% 46%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 222 18% 92%;
+  --secondary-foreground: 228 17% 22%;
+  --accent: 200 100% 35%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 85% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 228 54% 46%;
+  --radius: 0.9rem;
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: 228 21% 10%;
+  --foreground: 214 32% 92%;
+  --muted: 228 16% 20%;
+  --muted-foreground: 222 12% 70%;
+  --popover: 230 24% 12%;
+  --popover-foreground: 214 32% 96%;
+  --card: 230 24% 12%;
+  --card-foreground: 214 32% 96%;
+  --border: 228 16% 22%;
+  --input: 228 16% 22%;
+  --primary: 221 83% 65%;
+  --primary-foreground: 230 21% 12%;
+  --secondary: 230 18% 18%;
+  --secondary-foreground: 214 32% 96%;
+  --accent: 191 97% 55%;
+  --accent-foreground: 230 21% 12%;
+  --destructive: 358 75% 59%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 221 83% 65%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  body,
+  html {
+    min-height: 100%;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.2);
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
