@@ -68,6 +68,45 @@ The provider lives in `src/mocks/mock-backend-provider.tsx` and is wired through
 
 Major components include `data-testid` attributes (`chat-thread`, `chat-composer`, `library-table`, `upload-dialog`) for future integration testing. The mock backend is deterministic to simplify snapshot or e2e scripting later.
 
+## Architecture
+
+### PDF Extraction
+
+The current build ships with a **simulated ingest pipeline** and does not include an actual PDF extraction library. When a user uploads a paper or provides a URL, `MockBackend.ingestPaper()` (`src/mocks/mock-backend.ts`) fakes the processing lifecycle by emitting timed status events (`queued → processing → indexed`) and populating stub metadata. No file bytes are read or parsed.
+
+When a real backend is wired in, a server-side PDF extraction library (e.g. **PyMuPDF**, **pdfplumber**, or **Apache Tika**) should handle text extraction, section splitting, and figure/table detection before indexing content for retrieval-augmented chat.
+
+### Data Storage
+
+All application data lives **in memory** inside the `MockBackend` class, using JavaScript `Map` collections:
+
+| Collection | Key | Value type | Purpose |
+|---|---|---|---|
+| `papers` | `PaperId` | `PaperMeta` | Uploaded/linked paper metadata |
+| `chats` | chat id | `Chat` | Chat sessions with mode and attached papers |
+| `messages` | chat id | `Message[]` | Ordered messages per chat |
+| `folders` | folder id | `ChatFolder` | User-created chat folders |
+| `facts` | `PaperId` | `ResearchFacts` | Extracted datasets, metrics, repos |
+| `reproCards` | `PaperId` | `ReproCard` | Reproducibility summary per paper |
+| `gaps` | `PaperId` | `GapInsight[]` | Grounded/speculative gap insights |
+| `drafts` | chat id | `ChatDraft` | Unsent message drafts |
+
+Data is seeded from `src/data/mock-data.ts` at construction time and is lost on page refresh.
+
+**UI preferences** (theme, compact mode, enter-to-send, streaming toggle, token count visibility) are persisted to `localStorage` via Zustand's `persist` middleware in `src/stores/ui-store.ts` under the key `research-agent-ui`.
+
+### Ranking & Sorting
+
+There is no relevance-scoring or machine-learned ranking model. Items are ordered **chronologically**:
+
+| Collection | Sort field | Direction | Location |
+|---|---|---|---|
+| Papers | `addedAt` | Newest first | `MockBackend.listPapers()` |
+| Chats | `updatedAt` | Most-recently-updated first | `MockBackend.listChats()` |
+| Messages | `createdAt` | Oldest first (conversation order) | `MockBackend.listMessages()` |
+
+A future backend could layer relevance ranking (e.g. BM25, vector similarity, or citation-graph PageRank) on top of these default orderings.
+
 ## Next Steps
 
 - Replace MockBackend with real APIs/SSE streams.
